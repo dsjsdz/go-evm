@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/panjf2000/gnet/v2"
 	"log"
+	"time"
 )
 
 type echoServer struct {
@@ -24,8 +25,9 @@ func (es *echoServer) OnBoot(eng gnet.Engine) gnet.Action {
 func (es *echoServer) OnTraffic(c gnet.Conn) gnet.Action {
 	var (
 		buf, _ = c.Next(-1)
+		now    = time.Now().Format(time.DateTime)
 	)
-	fmt.Printf("收到内容: %v\n", string(buf))
+	fmt.Printf("[%s] received: %v \n", now, string(buf))
 
 	//payload := strings.Split(string(buf), " ")
 	//if len(payload) == 0 {
