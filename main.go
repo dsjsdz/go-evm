@@ -1,11 +1,12 @@
 package main
 
 import (
+	"encoding/hex"
 	"flag"
 	"fmt"
 	"github.com/panjf2000/gnet/v2"
 	"log"
-	"time"
+	"strings"
 )
 
 type echoServer struct {
@@ -25,49 +26,18 @@ func (es *echoServer) OnBoot(eng gnet.Engine) gnet.Action {
 func (es *echoServer) OnTraffic(c gnet.Conn) gnet.Action {
 	var (
 		buf, _ = c.Next(-1)
-		now    = time.Now().Format(time.DateTime)
 	)
-	fmt.Printf("[%s] received: %v \n", now, string(buf))
 
-	//payload := strings.Split(string(buf), " ")
-	//if len(payload) == 0 {
-	//	log.Println("桢内容格式不正确")
-	//	return gnet.None
-	//}
-	//
-	//// 帧长度 即 index 为 2-3 的内容，3默认是 00，不去计算
-	//size, err := strconv.ParseInt(payload[util.FrameLenSize], 16, 64)
-	//if err != nil {
-	//	log.Println(err)
-	//	return gnet.None
-	//}
-	//
-	//if len(payload) != int(size) {
-	//	log.Println("桢内容长度不正确")
-	//	return gnet.None
-	//}
-	//
-	//var (
-	//	funcCode = payload[4]
-	//	reply    []byte
-	//	now      = time.Now()
-	//	year     = strconv.FormatInt(int64(now.Year()), 16)
-	//	month    = strconv.FormatInt(int64(now.Month()), 16)
-	//	day      = strconv.FormatInt(int64(now.Day()), 16)
-	//	hour     = strconv.FormatInt(int64(now.Hour()), 16)
-	//	minute   = strconv.FormatInt(int64(now.Minute()), 16)
-	//	second   = strconv.FormatInt(int64(now.Second()), 16)
-	//	tmpl     = "0D 24 1D 00 80 %v %v %v %v %v %v %s 00 00 00 00 00 00 00 00 00 00 00 00 00 00 8D 0D 0A"
-	//)
-	//switch funcCode {
-	//case util.MethodServerTimeGet: // 登陆服务器
-	//	// NOTE: 处理逻辑，FrameMachineIdSize 设备id长度14
-	//	reply = []byte(fmt.Sprintf(tmpl, year, month, day, hour, minute, second, util.SuccessStatusCode))
-	//default:
-	//	// 其他自行处理
-	//}
-	//
-	//go c.Write(reply)
+	raw := hex.EncodeToString(buf)  // 16进字 接收
+	payload := strings.ToUpper(raw) // 转成大写
+
+	fmt.Printf("接收到内容: %v", payload)
+	// 0D2424008032343035303839393030303100000100000000000000000000000000AF0D0A
+
+	// TODO: 根据功能码进行判断，并处理对应逻辑
+
+	// 回传内容 自定义 根据文档
+	go c.Write([]byte("0D2424008032343035303839393030303100000100000000000000000000000000AF0D0A"))
 	return gnet.None
 }
 
@@ -76,7 +46,7 @@ func main() {
 	var multicore bool
 
 	// Example command: go run echo.go --port 7890 --multicore=true
-	flag.IntVar(&port, "port", 7890, "--port 7890")
+	flag.IntVar(&port, "port", 7891, "--port 7891")
 	flag.BoolVar(&multicore, "multicore", false, "--multicore true")
 	flag.Parse()
 	echo := &echoServer{addr: fmt.Sprintf("tcp://:%d", port), multicore: multicore}

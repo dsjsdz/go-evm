@@ -4,6 +4,9 @@
 
 > 本示例代码仅供参考。
 
+[ASCII字符串到16进制在线转换工具](https://coding.tools/cn/ascii-to-hex)
+
 ## MQTT 示例
 
 > 暂不提供
+

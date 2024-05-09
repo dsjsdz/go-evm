@@ -1,4 +1,4 @@
-package main
+package test
 
 import (
 	"fmt"
@@ -14,7 +14,7 @@ func Test_Client(t *testing.T) {
 	}
 	defer conn.Close()
 
-	if _, err = conn.Write([]byte("0D 24 1D 00 80 15 07 16 15 2A 2A 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 8D 0D 0A")); err != nil {
+	if _, err = conn.Write([]byte("0D241D0080150716152A2A0100000000000000000000000000008D0D0A")); err != nil {
 		t.Log(err)
 		return
 	}
